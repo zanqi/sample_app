@@ -142,12 +142,14 @@ describe "Authentication" do
 
       describe "as admin user" do
         let(:admin) { FactoryGirl.create(:admin) }
-
+        let(:users_count) { User.count }
+        subject { users_count }
         before { sign_in admin }
 
         describe "submitting a DELETE request to delete one self" do
           before { delete user_path(admin) }
           specify { expect(response).to redirect_to(root_path) }
+          it { should eq(User.count) }
         end
       end
     end
