@@ -110,6 +110,19 @@ describe "Authentication" do
             it { should have_title('Sign in') }
           end
         end
+
+        describe "in the Microposts controller" do
+
+          describe "submitting to the create action" do
+            before { post microposts_path }
+            specify { expect(response).to redirect_to(signin_path) }
+          end
+
+          describe "submitting to the destroy action" do
+            before { delete micropost_path(FactoryGirl.create(:micropost)) }
+            specify { expect(response).to redirect_to(signin_path) }
+          end
+        end
       end
 
       describe "as wrong user" do
@@ -141,15 +154,14 @@ describe "Authentication" do
       end
 
       describe "as admin user" do
-        let(:admin) { FactoryGirl.create(:admin) }
-        let(:users_count) { User.count }
-        subject { users_count }
+        let!(:admin) { FactoryGirl.create(:admin) }
+        users_count = User.count
         before { sign_in admin }
 
         describe "submitting a DELETE request to delete one self" do
           before { delete user_path(admin) }
           specify { expect(response).to redirect_to(root_path) }
-          it { should eq(User.count) }
+          users_count.should == User.count
         end
       end
     end
